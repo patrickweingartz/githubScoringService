@@ -15,6 +15,7 @@ public class JsonUtils {
 
   public JsonUtils(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
+    objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
   }
 
   public List<GithubRepository> parseGithubRepositoriesFromJsonResult(String json) throws IOException {
