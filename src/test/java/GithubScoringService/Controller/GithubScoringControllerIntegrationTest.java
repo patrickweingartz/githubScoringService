@@ -65,9 +65,12 @@ class GithubScoringControllerIntegrationTest {
     ObjectMapper objectMapper = new ObjectMapper();
     JsonNode jsonNode = objectMapper.readTree(responseBody);
 
-    assertThat(jsonNode.has("total_count")).isTrue();
-    assertThat(jsonNode.get("total_count").asInt()).isGreaterThan(0);
-    assertThat(jsonNode.get("items").isArray()).isTrue();
-    assertThat(jsonNode.get("items").size()).isGreaterThan(0);
+    assertThat(jsonNode.get(0).has("id")).isTrue();
+    assertThat(jsonNode.get(0).has("full_name")).isTrue();
+    assertThat(jsonNode.get(0).has("score")).isTrue();
+    assertThat(jsonNode.get(0).has("numberOfStars")).isTrue();
+    assertThat(jsonNode.get(0).has("numberOfForks")).isTrue();
+    assertThat(jsonNode.get(0).has("recencyOfUpdates")).isTrue();
+    assertThat(jsonNode.get(0).has("popularityScoring")).isTrue();
   }
 }
