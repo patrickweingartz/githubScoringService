@@ -24,17 +24,17 @@ public class GithubApiService {
     determineSearchStrings(repositoryLanguage, minCreationDateOfRepository);
 
     return webClient.get()
-        .uri("/search/repositories?"+languageSearchString + getLanguageSearchString + "&fork:" + true + "&per_page=" + maxResultsPerPage + "page=" + 1)
+        .uri("/search/repositories?" + languageSearchString + getLanguageSearchString + "&fork:" + true + "&per_page=" + maxResultsPerPage + "page=" + 1)
         .retrieve()
         .bodyToMono(String.class)
         .block();
   }
 
   private void determineSearchStrings(String repositoryLanguage, LocalDate minCreationDateOfRepository) {
-    if (repositoryLanguage != null){
+    if (repositoryLanguage != null) {
       languageSearchString = "q=language:" + repositoryLanguage;
     }
-    if (minCreationDateOfRepository != null){
+    if (minCreationDateOfRepository != null) {
       getLanguageSearchString = "&q=created:>=" + minCreationDateOfRepository;
     }
   }

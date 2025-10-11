@@ -10,7 +10,8 @@ import java.util.List;
 
 @Component
 public class JsonUtils {
-  private  ObjectMapper objectMapper;
+
+  private ObjectMapper objectMapper;
 
   public JsonUtils(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
@@ -29,5 +30,4 @@ public class JsonUtils {
 
     return githubRepositories;
   }
-
 }

@@ -1,6 +1,5 @@
 package GithubScoringService.Controller;
 
-import GithubScoringService.GithubScoringServiceApplication;
 import GithubScoringService.Service.GithubScoringService;
 import GithubScoringService.Utils.TestdataInitializer;
 import githubScoringService.model.GithubRepository;
@@ -10,10 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
 import java.util.List;

@@ -22,7 +22,7 @@ public class GithubScoringController implements GetGithubReposSortedByScoreApi {
 
   @Override
   public ResponseEntity<List<GithubRepository>> getGithubReposSortedByScore(String repositoryLanguage, LocalDate minCreationDateOfRepository) {
-    List <GithubRepository> gitHubRespositoryList = null;
+    List<GithubRepository> gitHubRespositoryList = null;
     try {
       gitHubRespositoryList = githubScoringService.getGithubRepositoriesByDateAndLanguage(repositoryLanguage, minCreationDateOfRepository);
     }
