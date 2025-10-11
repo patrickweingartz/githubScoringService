@@ -27,12 +27,12 @@ class JsonUtilsTest {
   public void setup() {
     objectMapper = new ObjectMapper();
     underTest = new JsonUtils(objectMapper);
-
-    JsonResult = TestdataInitializer.generateJsonNodeWithOneItem().toString();
   }
 
   @Test
   public void parseGithubRepositoriesFromJsonResultReturnsGithubRepositoryList() throws IOException {
+    JsonResult = TestdataInitializer.generateJsonNodeWithOneItem().toString();
+
     List<GithubRepository> githubRepositoryList = underTest.parseGithubRepositoriesFromJsonResult(JsonResult);
     assertThat(githubRepositoryList.size()).isEqualTo(1);
     assertThat(githubRepositoryList.getFirst().getFullName()).isEqualTo("TestRepository");
@@ -41,5 +41,14 @@ class JsonUtilsTest {
     assertThat(githubRepositoryList.getFirst().getRecencyOfUpdates()).isEqualTo(444);
     assertThat(githubRepositoryList.getFirst().getPopularityScoring()).isEqualTo(55432);
     assertThat(githubRepositoryList.getFirst().getId()).isEqualTo("1234");
+  }
+
+  @Test
+  public void parseGithubRepositoriesFromJsonResultWithoutItemsReturnsEmptyList() throws IOException {
+    JsonResult = TestdataInitializer.generateJsonNodeWithoutItems().toString();
+
+    List<GithubRepository> githubRepositoryList = underTest.parseGithubRepositoriesFromJsonResult(JsonResult);
+    assertThat(githubRepositoryList.size()).isEqualTo(0);
+    assertThat(githubRepositoryList.isEmpty()).isEqualTo(true);
   }
 }
