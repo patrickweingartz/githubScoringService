@@ -51,4 +51,11 @@ public class TestdataInitializer {
 
     return node;
   }
+
+  public static ObjectNode generateJsonNodeWithoutItems() {
+    ObjectNode node = JsonNodeFactory.instance.objectNode();
+    node.put("total_count", 1);
+    node.put("incomplete_results", false);
+    return node;
+  }
 }
