@@ -37,7 +37,8 @@ class GithubScoringControllerIntegrationTest {
     return Stream.of(
         org.junit.jupiter.params.provider.Arguments.of("java", "2025-10-09"),
         org.junit.jupiter.params.provider.Arguments.of(null, "2025-10-09"),
-        org.junit.jupiter.params.provider.Arguments.of("java", null)
+        org.junit.jupiter.params.provider.Arguments.of("java", null),
+        org.junit.jupiter.params.provider.Arguments.of(null, null)
     );
   }
 
