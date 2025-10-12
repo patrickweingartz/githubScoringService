@@ -6,7 +6,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import githubScoringService.model.GithubRepository;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +20,10 @@ public class TestdataInitializer {
 
     githubRepository.setId("1234");
     githubRepository.setFullName("TestRepository");
-    githubRepository.setScore(new BigDecimal(12345));
-    githubRepository.setNumberOfForks(12);
-    githubRepository.setNumberOfStars(5);
+    githubRepository.setForksCount(12);
+    githubRepository.setStargazersCount(5);
     githubRepository.setPopularityScoring(55432);
-    githubRepository.setRecencyOfUpdates(444);
+    githubRepository.setUpdatedAt(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
     githubRepositoryList.add(githubRepository);
 
     return githubRepositoryList;
@@ -38,10 +38,9 @@ public class TestdataInitializer {
     ObjectNode item = JsonNodeFactory.instance.objectNode();
     item.put("id", 1234);
     item.put("full_name", "TestRepository");
-    item.put("score", 12345);
-    item.put("numberOfStars", 5);
-    item.put("numberOfForks", 3);
-    item.put("recencyOfUpdates", 444);
+    item.put("stargazers_count", 5);
+    item.put("forks_count", 3);
+    item.put("updated_at", String.valueOf(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)));
     item.put("popularityScoring", 55432);
 
     ArrayNode items = JsonNodeFactory.instance.arrayNode();

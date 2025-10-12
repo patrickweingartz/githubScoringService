@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,9 @@ public class GithubScoringController implements GetGithubReposSortedByScoreApi {
     catch (IOException e) {
       throw new RuntimeException(e);
     }
-    return ResponseEntity.status(HttpStatus.OK).body(gitHubRespositoryList);
+    List<GithubRepository> gitHubRespositoryListSortedByPopularity = gitHubRespositoryList.stream().sorted(Comparator.comparing(GithubRepository::getPopularityScoring).reversed()).toList();
+
+    return ResponseEntity.status(HttpStatus.OK).body(gitHubRespositoryListSortedByPopularity);
   }
 }
 

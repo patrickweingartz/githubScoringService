@@ -57,10 +57,9 @@ class GithubScoringControllerIntegrationTest {
 
     assertThat(jsonNode.get(0).has("id")).isTrue();
     assertThat(jsonNode.get(0).has("full_name")).isTrue();
-    assertThat(jsonNode.get(0).has("score")).isTrue();
-    assertThat(jsonNode.get(0).has("numberOfStars")).isTrue();
-    assertThat(jsonNode.get(0).has("numberOfForks")).isTrue();
-    assertThat(jsonNode.get(0).has("recencyOfUpdates")).isTrue();
+    assertThat(jsonNode.get(0).has("stargazers_count")).isTrue();
+    assertThat(jsonNode.get(0).has("forks_count")).isTrue();
+    assertThat(jsonNode.get(0).has("updated_at")).isTrue();
     assertThat(jsonNode.get(0).has("popularityScoring")).isTrue();
   }
 }

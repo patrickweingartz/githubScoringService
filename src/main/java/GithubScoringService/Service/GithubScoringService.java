@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -24,6 +26,18 @@ public class GithubScoringService {
     String githubRepositoryAsJsonResult = githubApiService.getFilteredAndSortedRepositories(repositoryLanguage, minCreationDateOfRepository);
     List<GithubRepository> githubRepositories = jsonUtils.parseGithubRepositoriesFromJsonResult(githubRepositoryAsJsonResult);
 
+    initiatePopularityScoringForRepositories(githubRepositories);
     return githubRepositories;
+  }
+
+  private void initiatePopularityScoringForRepositories(List<GithubRepository> githubRepositories) {
+    githubRepositories.forEach(this::calculateAndSetPopularityScoringForRepository);
+  }
+
+  private void calculateAndSetPopularityScoringForRepository(GithubRepository githubRepository) {
+    int pularityScoring = Math.toIntExact(githubRepository.getForksCount() * 100 +
+                                          githubRepository.getStargazersCount() * 1000 +
+                                          ChronoUnit.MINUTES.between(githubRepository.getUpdatedAt().toLocalDateTime(), LocalDateTime.now()));
+    githubRepository.setPopularityScoring(pularityScoring);
   }
 }

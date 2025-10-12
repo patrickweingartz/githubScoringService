@@ -28,16 +28,16 @@ class GithubScoringControllerTest {
   @Mock
   private GithubScoringService githubScoringService;
 
-  private List<GithubRepository> ggithubRepositoryList;
+  private List<GithubRepository> githubRepositoryList;
 
   @BeforeEach
   public void initializeGithubRespositoryList() {
-    ggithubRepositoryList = TestdataInitializer.generateRepositryListWithDataForTesting();
+    githubRepositoryList = TestdataInitializer.generateRepositryListWithDataForTesting();
   }
 
   @Test
   public void getGithubRepositoriesByDateAndLanguageReturnsStringResult() throws IOException {
-    when(githubScoringService.getGithubRepositoriesByDateAndLanguage(any(), any())).thenReturn(ggithubRepositoryList);
-    assertThat(underTest.getGithubReposSortedByScore(any(), any())).isEqualTo(ResponseEntity.status(HttpStatus.OK).body(ggithubRepositoryList));
+    when(githubScoringService.getGithubRepositoriesByDateAndLanguage(any(), any())).thenReturn(githubRepositoryList);
+    assertThat(underTest.getGithubReposSortedByScore(any(), any())).isEqualTo(ResponseEntity.status(HttpStatus.OK).body(githubRepositoryList));
   }
 }
