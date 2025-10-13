@@ -22,7 +22,6 @@ public class TestdataInitializer {
     githubRepository.setFullName("TestRepository");
     githubRepository.setForksCount(12);
     githubRepository.setStargazersCount(5);
-    githubRepository.setPopularityScoring(55432);
     githubRepository.setUpdatedAt(OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
     githubRepositoryList.add(githubRepository);
 
@@ -56,5 +55,20 @@ public class TestdataInitializer {
     node.put("total_count", 1);
     node.put("incomplete_results", false);
     return node;
+  }
+
+  public static ObjectNode generateJsonNoteFromRemainingRequestsResponse() {
+    ObjectNode root = JsonNodeFactory.instance.objectNode();
+    ObjectNode resources = JsonNodeFactory.instance.objectNode();
+
+    ObjectNode search = JsonNodeFactory.instance.objectNode();
+    search.put("limit", 11);
+    search.put("used", 2);
+    search.put("remaining", 9);
+    search.put("reset", 1760282688);
+    resources.set("search", search);
+    root.set("resources", resources);
+
+    return root;
   }
 }

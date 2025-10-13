@@ -5,6 +5,7 @@ import githubScoringService.api.GetGithubReposSortedByScoreApi;
 import githubScoringService.model.GithubRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -22,17 +23,20 @@ public class GithubScoringController implements GetGithubReposSortedByScoreApi {
   }
 
   @Override
-  public ResponseEntity<List<GithubRepository>> getGithubReposSortedByScore(String repositoryLanguage, LocalDate minCreationDateOfRepository) {
-    List<GithubRepository> gitHubRespositoryList = null;
-    try {
-      gitHubRespositoryList = githubScoringService.getGithubRepositoriesByDateAndLanguage(repositoryLanguage, minCreationDateOfRepository);
+  public ResponseEntity<List<GithubRepository>> getGithubReposSortedByScore(@RequestHeader(value = "authorizationToken", required = false)
+                                                                            String authorizationToken,
+                                                                            @RequestHeader(value = "repositoryLanguage", required = false)
+                                                                            String repositoryLanguage,
+                                                                            @RequestHeader(value = "minCreationDateOfRepository", required = false)
+                                                                            LocalDate minCreationDateOfRepository) {
+    List<GithubRepository> gitHubRespositoryList;
+    try{
+      gitHubRespositoryList = githubScoringService.getGithubRepositoriesByDateAndLanguage(authorizationToken, repositoryLanguage, minCreationDateOfRepository);
+      List<GithubRepository> gitHubRespositoryListSortedByPopularity = gitHubRespositoryList.stream().sorted(Comparator.comparing(GithubRepository::getPopularityScoring).reversed()).toList();
+      return ResponseEntity.status(HttpStatus.OK).body(gitHubRespositoryListSortedByPopularity);
+    }catch(IOException ioException){
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
-    catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    List<GithubRepository> gitHubRespositoryListSortedByPopularity = gitHubRespositoryList.stream().sorted(Comparator.comparing(GithubRepository::getPopularityScoring).reversed()).toList();
-
-    return ResponseEntity.status(HttpStatus.OK).body(gitHubRespositoryListSortedByPopularity);
   }
 }
 

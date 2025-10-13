@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -16,7 +17,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class GithubScoringServiceTest {
@@ -25,18 +25,22 @@ class GithubScoringServiceTest {
   private GithubScoringService underTest;
 
   @Mock
-  private GithubApiService githubApiServiceMock;
+  private GithubCallDistributionService githubCallDistributionServiceMock;
 
   @Mock
   private JsonUtils jsonUtilsMock;
 
   @Test
   public void getGithubRepositoriesByDateAndLanguageReturnsStringResult() throws IOException {
-    List<GithubRepository> githubRepositoryList = TestdataInitializer.generateRepositryListWithDataForTesting();
+    Mockito.when(githubCallDistributionServiceMock.distributeApiCallsByRemainingCallLimit(any(), any(), any())).thenReturn(Mono.just(TestdataInitializer.generateRepositryListWithDataForTesting()));
 
-    Mockito.when(githubApiServiceMock.getFilteredAndSortedRepositories(any(), any())).thenReturn("");
-    Mockito.when(jsonUtilsMock.parseGithubRepositoriesFromJsonResult(anyString())).thenReturn(githubRepositoryList);
+    List<GithubRepository> githubRepositoryListResponse = underTest.getGithubRepositoriesByDateAndLanguage("Testtoken", "java", LocalDate.of(2025, 1, 1));
 
-    assertThat(underTest.getGithubRepositoriesByDateAndLanguage("java", LocalDate.of(2025, 1, 1))).isEqualTo(githubRepositoryList);
+    assertThat(githubRepositoryListResponse.getFirst().getFullName()).isEqualTo("TestRepository");
+    assertThat(githubRepositoryListResponse.getFirst().getForksCount()).isEqualTo(12);
+    assertThat(githubRepositoryListResponse.getFirst().getStargazersCount()).isEqualTo(5);
+    assertThat(githubRepositoryListResponse.getFirst().getUpdatedAt()).isEqualTo("2025-01-01T00:00Z");
+    assertThat(githubRepositoryListResponse.getFirst().getId()).isEqualTo("1234");
+    assertThat(githubRepositoryListResponse.getFirst().getPopularityScoring()).isNotNull();
   }
 }

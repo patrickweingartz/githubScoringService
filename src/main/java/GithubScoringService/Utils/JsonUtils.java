@@ -1,6 +1,8 @@
 package GithubScoringService.Utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import githubScoringService.model.GithubRepository;
 import org.springframework.stereotype.Component;
@@ -18,17 +20,27 @@ public class JsonUtils {
     objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
   }
 
-  public List<GithubRepository> parseGithubRepositoriesFromJsonResult(String json) throws IOException {
+  public List<GithubRepository> parseGithubRepositoriesFromJsonResult(String json){
     List<GithubRepository> githubRepositories;
-    if (objectMapper.readTree(json).get("items") != null) {
-      githubRepositories = objectMapper.readValue(objectMapper.readTree(json).get("items").toString(),
-                                                  new TypeReference<List<GithubRepository>>() {
-                                                  });
+    try {
+      if (objectMapper.readTree(json).get("items") != null) {
+        githubRepositories = objectMapper.readValue(objectMapper.readTree(json).get("items").toString(),
+                                                    new TypeReference<List<GithubRepository>>() {
+                                                    });
+      }
+      else {
+        return List.of();
+      }
     }
-    else {
-      return List.of();
+    catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
     }
 
     return githubRepositories;
+  }
+
+  public Integer parseRemainingCallsForRepositorySearchFromJsonResult(String json) throws IOException {
+    JsonNode root = objectMapper.readTree(json);
+    return root.path("resources").path("search").path("remaining").asInt();
   }
 }
