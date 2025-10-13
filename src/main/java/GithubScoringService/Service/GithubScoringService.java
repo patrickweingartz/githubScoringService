@@ -1,6 +1,5 @@
 package GithubScoringService.Service;
 
-import GithubScoringService.Utils.JsonUtils;
 import githubScoringService.model.GithubRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,24 +12,22 @@ import java.util.List;
 @Service
 public class GithubScoringService {
 
-  private GithubApiService githubApiService;
+  private GithubCallDistributionService githubCallDistributionService;
 
-  private JsonUtils jsonUtils;
-
-  public GithubScoringService(GithubApiService githubApiService, JsonUtils jsonUtils) {
-    this.githubApiService = githubApiService;
-    this.jsonUtils = jsonUtils;
+  public GithubScoringService(GithubCallDistributionService githubCallDistributionService) {
+    this.githubCallDistributionService = githubCallDistributionService;
   }
 
-  public List<GithubRepository> getGithubRepositoriesByDateAndLanguage(String repositoryLanguage, LocalDate minCreationDateOfRepository) throws IOException {
-    String githubRepositoryAsJsonResult = githubApiService.getFilteredAndSortedRepositories(repositoryLanguage, minCreationDateOfRepository);
-    List<GithubRepository> githubRepositories = jsonUtils.parseGithubRepositoriesFromJsonResult(githubRepositoryAsJsonResult);
-
-    initiatePopularityScoringForRepositories(githubRepositories);
-    return githubRepositories;
+  public List<GithubRepository> getGithubRepositoriesByDateAndLanguage(String authorizationToken, String repositoryLanguage, LocalDate minCreationDateOfRepository) throws IOException {
+    List<GithubRepository> githubRepositoryList = githubCallDistributionService.distributeApiCallsByRemainingCallLimit(authorizationToken, repositoryLanguage, minCreationDateOfRepository).block();
+    initiatePopularityScoringForRepositories(githubRepositoryList);
+    return githubRepositoryList;
   }
 
   private void initiatePopularityScoringForRepositories(List<GithubRepository> githubRepositories) {
+    if (githubRepositories == null || githubRepositories.isEmpty()) {
+      return;
+    }
     githubRepositories.forEach(this::calculateAndSetPopularityScoringForRepository);
   }
 

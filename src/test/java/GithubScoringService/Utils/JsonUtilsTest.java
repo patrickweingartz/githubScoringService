@@ -51,4 +51,11 @@ class JsonUtilsTest {
     assertThat(githubRepositoryList.size()).isEqualTo(0);
     assertThat(githubRepositoryList.isEmpty()).isEqualTo(true);
   }
+
+  @Test
+  public void parseGithubRepositoriesFromJsonResultWithoutItemsReturnsEmptyList2() throws IOException {
+    JsonResult = TestdataInitializer.generateJsonNoteFromRemainingRequestsResponse().toString();
+
+    assertThat(underTest.parseRemainingCallsForRepositorySearchFromJsonResult(JsonResult)).isEqualTo(9);
+  }
 }
