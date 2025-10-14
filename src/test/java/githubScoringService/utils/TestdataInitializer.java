@@ -1,4 +1,4 @@
-package GithubScoringService.Utils;
+package githubScoringService.utils;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;

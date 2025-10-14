@@ -1,4 +1,4 @@
-package GithubScoringService.Utils;
+package githubScoringService.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import githubScoringService.model.GithubRepository;
@@ -30,7 +30,7 @@ class JsonUtilsTest {
   }
 
   @Test
-  public void parseGithubRepositoriesFromJsonResultReturnsGithubRepositoryList() throws IOException {
+  public void should_parseToGithubRepositoryList_when_searchResultAsJsonHasItems() throws IOException {
     JsonResult = TestdataInitializer.generateJsonNodeWithOneItem().toString();
 
     List<GithubRepository> githubRepositoryList = underTest.parseGithubRepositoriesFromJsonResult(JsonResult);
@@ -44,7 +44,7 @@ class JsonUtilsTest {
   }
 
   @Test
-  public void parseGithubRepositoriesFromJsonResultWithoutItemsReturnsEmptyList() throws IOException {
+  public void should_returnEmptyList_when_searchResultAsJsonHasNoItems() throws IOException {
     JsonResult = TestdataInitializer.generateJsonNodeWithoutItems().toString();
 
     List<GithubRepository> githubRepositoryList = underTest.parseGithubRepositoriesFromJsonResult(JsonResult);
@@ -53,7 +53,7 @@ class JsonUtilsTest {
   }
 
   @Test
-  public void parseGithubRepositoriesFromJsonResultWithoutItemsReturnsEmptyList2() throws IOException {
+  public void   should_parseRemainingCallsToNumber_when_JsonResponseContainsRemainingCalls() throws IOException {
     JsonResult = TestdataInitializer.generateJsonNoteFromRemainingRequestsResponse().toString();
 
     assertThat(underTest.parseRemainingCallsForRepositorySearchFromJsonResult(JsonResult)).isEqualTo(9);

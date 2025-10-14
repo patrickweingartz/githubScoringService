@@ -1,6 +1,6 @@
-package GithubScoringService.Service;
+package githubScoringService.service;
 
-import GithubScoringService.Utils.JsonUtils;
+import githubScoringService.utils.JsonUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +11,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,12 +47,18 @@ class GithubApiServiceTest {
   }
 
   @Test
-  public void remainingRateLimitCallWithBearerCallsAllMocks() throws IOException {
+  public void should_receivingRateLimitForRepoSearch_when_bearerPresent() throws IOException {
     underTest.getRemainingRateLimitForRepositorySearch("Bearer Testtoken");
+    verify(webClientMock, times(1)).get();
+    verify(jsonUtilsMock, times(1)).parseRemainingCallsForRepositorySearchFromJsonResult(any());
+    verifyNoMoreInteractions(webClientMock, jsonUtilsMock);
   }
 
   @Test
-  public void remainingRateLimitCallWithoutBearerCallsAllMocks() throws IOException {
+  public void should_receivingRateLimitForRepoSearch_when_bearerNotPresent() throws IOException {
     underTest.getRemainingRateLimitForRepositorySearch(null);
+    verify(webClientMock, times(1)).get();
+    verify(jsonUtilsMock, times(1)).parseRemainingCallsForRepositorySearchFromJsonResult(any());
+    verifyNoMoreInteractions(webClientMock, jsonUtilsMock);
   }
 }

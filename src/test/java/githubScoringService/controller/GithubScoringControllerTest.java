@@ -1,7 +1,8 @@
-package GithubScoringService.Controller;
+package githubScoringService.controller;
 
-import GithubScoringService.Service.GithubScoringService;
-import GithubScoringService.Utils.TestdataInitializer;
+import githubScoringService.exception.NoParamsForSearchException;
+import githubScoringService.service.GithubScoringService;
+import githubScoringService.utils.TestdataInitializer;
 import githubScoringService.model.GithubRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -36,8 +38,15 @@ class GithubScoringControllerTest {
   }
 
   @Test
-  public void getGithubRepositoriesByDateAndLanguageReturnsStringResult() throws IOException {
-    when(githubScoringService.getGithubRepositoriesByDateAndLanguage(any(), any(), any())).thenReturn(githubRepositoryList);
-    assertThat(underTest.getGithubReposSortedByScore(any(), any(), any())).isEqualTo(ResponseEntity.status(HttpStatus.OK).body(githubRepositoryList));
+  public void should_returnRepositoryResultAsString_when_called() throws IOException {
+    when(githubScoringService.getRepositoriesSortedByPopularity(any(), any(), any())).thenReturn(githubRepositoryList);
+    assertThat(underTest.getGithubReposSortedByPopularityScore("", "java", "null")).isEqualTo(ResponseEntity.status(HttpStatus.OK).body(githubRepositoryList));
+  }
+
+  @Test
+  public void should_returnParameterError_when_calledWithoutSearchparam() throws IOException {
+    assertThrows(NoParamsForSearchException.class, () -> {
+      underTest.getGithubReposSortedByPopularityScore("", "null", "null");
+    });
   }
 }

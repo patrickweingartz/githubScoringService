@@ -11,7 +11,7 @@
   <groupId>com.example</groupId>
   <artifactId>GithubScoringService</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>GithubScoringService</name>
+  <name>githubScoringService</name>
   <description>Service to calculate Scoring of public-github-repositories based on an algorithm</description>
   <url/>
   <licenses>
@@ -53,7 +53,7 @@
     <dependency>
       <groupId>com.example</groupId>
       <artifactId>GithubScoringServiceApi</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>1.0.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

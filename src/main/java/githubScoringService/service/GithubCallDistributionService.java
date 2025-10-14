@@ -1,6 +1,6 @@
-package GithubScoringService.Service;
+package githubScoringService.service;
 
-import GithubScoringService.Utils.JsonUtils;
+import githubScoringService.utils.JsonUtils;
 import githubScoringService.model.GithubRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -29,8 +29,8 @@ public class GithubCallDistributionService {
 
   public Mono<List<GithubRepository>> distributeApiCallsByRemainingCallLimit(String authorizationToken, String repositoryLanguage, LocalDate minCreationDateOfRepository) throws IOException {
     Integer numberOfCallsRemaining = determineNumberOfPagesIterateForSearchresults(authorizationToken);
-    Flux<Integer> numberOfParallelCalls = Flux.range(1, numberOfCallsRemaining);
-    return numberOfParallelCalls.flatMap(pageToReqeust
+    Flux<Integer> pagesToRequest = Flux.range(1, numberOfCallsRemaining);
+    return pagesToRequest.flatMap(pageToReqeust
                                              -> githubApiService.getFilteredAndSortedRepositories(authorizationToken,
                                                                                                   repositoryLanguage,
                                                                                                   minCreationDateOfRepository,
