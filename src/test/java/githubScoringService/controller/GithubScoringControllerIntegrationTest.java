@@ -1,16 +1,15 @@
-package GithubScoringService.Controller;
+package githubScoringService.controller;
 
-import GithubScoringService.GithubScoringServiceApplication;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import githubScoringService.GithubScoringServiceApplication;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -24,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 class GithubScoringControllerIntegrationTest {
 
+  public static final String GET_GITHUB_REPOS_SORTED_BY_POPULARITY_SCORE = "/getGithubReposSortedByPopularityScore/";
   @Autowired
   private WebTestClient webTestClient;
 
@@ -42,15 +42,27 @@ class GithubScoringControllerIntegrationTest {
     }
   }
 
+  private String determineUrlStringWithPathVariables(String repositoryLanguage, String minCreationDateOfRepository) {
+    String pathString = "";
+    if (repositoryLanguage != null && minCreationDateOfRepository != null) {
+      pathString = "/" + repositoryLanguage + "/" + minCreationDateOfRepository;
+    }
+    else if (minCreationDateOfRepository == null) {
+      pathString = "/" + repositoryLanguage + "/null";
+    }
+    else if (repositoryLanguage == null) {
+      pathString = "/null/" + minCreationDateOfRepository;
+    }
+    return pathString;
+  }
+
   @ParameterizedTest
   @MethodSource("searchParameterValueProvider")
-  public void getGithubRepositoriesByDateAndLanguageReturnsGithubRepositoriesAsJson(String language, String date, String authToken) throws JsonProcessingException {
+  public void should_returnGithubRepositoriesAsJson_when_differentParametersAreSet(String language, String date, String authToken) throws JsonProcessingException {
     String responseBody = webTestClient.get()
-        .uri("/getGithubReposSortedByScore/")
+        .uri("/getGithubReposSortedByPopularityScore" + determineUrlStringWithPathVariables(language, date))
         .headers(headers -> {
           addHeaderIfNotNull(headers, "authorizationToken", authToken);
-          addHeaderIfNotNull(headers, "repositoryLanguage", language);
-          addHeaderIfNotNull(headers, "minCreationDateOfRepository", date);
         })
         .exchange()
         .returnResult(String.class)
@@ -69,47 +81,11 @@ class GithubScoringControllerIntegrationTest {
   }
 
   @Test
-  public void getGithubRepositoriesByDateAndLanguageWithCreationDateInFutureReturnsEmptyList() throws JsonProcessingException {
+  public void should_githubRepositorySearchReturnEmptyList_when_creationDateInFuture() {
     String responseBody = webTestClient.get()
-        .uri("/getGithubReposSortedByScore/")
+        .uri(GET_GITHUB_REPOS_SORTED_BY_POPULARITY_SCORE + "null/2099-10-01")
         .headers(headers -> {
           addHeaderIfNotNull(headers, "authorizationToken", null);
-          addHeaderIfNotNull(headers, "repositoryLanguage", null);
-          addHeaderIfNotNull(headers, "minCreationDateOfRepository", "2026-10-09");
-        })
-        .exchange()
-        .returnResult(String.class)
-        .getResponseBody()
-        .blockFirst();
-
-      assertThat("[]".equals(responseBody)).isTrue();
-  }
-
-  @Test
-  public void getGithubRepositoriesByDateAndLanguageWithNotExistingLanguageReturnsEmptyList() throws JsonProcessingException {
-    String responseBody = webTestClient.get()
-        .uri("/getGithubReposSortedByScore/")
-        .headers(headers -> {
-          addHeaderIfNotNull(headers, "authorizationToken", null);
-          addHeaderIfNotNull(headers, "repositoryLanguage", "notReallyExisting");
-          addHeaderIfNotNull(headers, "minCreationDateOfRepository", "2023-10-09");
-        })
-        .exchange()
-        .returnResult(String.class)
-        .getResponseBody()
-        .blockFirst();
-
-     assertThat("[]".equals(responseBody)).isTrue();
-  }
-
-  @Test
-  public void getGithubRepositoriesByDateAndLanguageWithoutSearchParamsReturnsEmptyList() throws JsonProcessingException {
-    String responseBody = webTestClient.get()
-        .uri("/getGithubReposSortedByScore/")
-        .headers(headers -> {
-          addHeaderIfNotNull(headers, "authorizationToken", null);
-          addHeaderIfNotNull(headers, "repositoryLanguage", null);
-          addHeaderIfNotNull(headers, "minCreationDateOfRepository", null);
         })
         .exchange()
         .returnResult(String.class)
@@ -117,5 +93,36 @@ class GithubScoringControllerIntegrationTest {
         .blockFirst();
 
     assertThat("[]".equals(responseBody)).isTrue();
+  }
+
+  @Test
+  public void should_githubRepositorySearchReturnEmptyList_when_languageNotExisting() throws JsonProcessingException {
+    String responseBody = webTestClient.get()
+        .uri(GET_GITHUB_REPOS_SORTED_BY_POPULARITY_SCORE + "notReallyExisting/null")
+        .headers(headers -> {
+          addHeaderIfNotNull(headers, "authorizationToken", null);
+        })
+        .exchange()
+        .returnResult(String.class)
+        .getResponseBody()
+        .blockFirst();
+
+    assertThat("[]".equals(responseBody)).isTrue();
+  }
+
+  @Test
+  public void should_githubRepositorySearchReturnIllegalArgumentException_when_noSearchParameters() throws JsonProcessingException {
+    String response =
+        (webTestClient.get()
+            .uri(GET_GITHUB_REPOS_SORTED_BY_POPULARITY_SCORE + "/null/null")
+            .headers(headers -> {
+              addHeaderIfNotNull(headers, "authorizationToken", null);
+            })
+            .exchange()
+            .returnResult(String.class)
+            .getResponseBody()
+            .blockFirst());
+
+    assertThat(response).contains("The Github-API needs at least one Searchparameter to perform a repository search!");
   }
 }

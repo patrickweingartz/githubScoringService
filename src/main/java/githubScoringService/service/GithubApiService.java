@@ -1,6 +1,6 @@
-package GithubScoringService.Service;
+package githubScoringService.service;
 
-import GithubScoringService.Utils.JsonUtils;
+import githubScoringService.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

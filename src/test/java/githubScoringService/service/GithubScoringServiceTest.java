@@ -1,7 +1,6 @@
-package GithubScoringService.Service;
+package githubScoringService.service;
 
-import GithubScoringService.Utils.JsonUtils;
-import GithubScoringService.Utils.TestdataInitializer;
+import githubScoringService.utils.TestdataInitializer;
 import githubScoringService.model.GithubRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,14 +26,11 @@ class GithubScoringServiceTest {
   @Mock
   private GithubCallDistributionService githubCallDistributionServiceMock;
 
-  @Mock
-  private JsonUtils jsonUtilsMock;
-
   @Test
-  public void getGithubRepositoriesByDateAndLanguageReturnsStringResult() throws IOException {
+  public void should_returnSortedRepositories_when_called() throws IOException {
     Mockito.when(githubCallDistributionServiceMock.distributeApiCallsByRemainingCallLimit(any(), any(), any())).thenReturn(Mono.just(TestdataInitializer.generateRepositryListWithDataForTesting()));
 
-    List<GithubRepository> githubRepositoryListResponse = underTest.getGithubRepositoriesByDateAndLanguage("Testtoken", "java", LocalDate.of(2025, 1, 1));
+    List<GithubRepository> githubRepositoryListResponse = underTest.getRepositoriesSortedByPopularity("Testtoken", "java", LocalDate.of(2025, 1, 1));
 
     assertThat(githubRepositoryListResponse.getFirst().getFullName()).isEqualTo("TestRepository");
     assertThat(githubRepositoryListResponse.getFirst().getForksCount()).isEqualTo(12);
