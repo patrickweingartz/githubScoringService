@@ -1,24 +1,17 @@
 version: 2.1
 
 jobs:
-  build:
+  settingskopieren:
     docker:
-      - image: cimg/openjdk:17.0
+      - image: cimg/base:current
     steps:
       - checkout
       - run:
-          name: Configure Maven
-          command: |
-            mkdir -p ~/.m2
-            # Ensure the settings.xml file exists before copying
-            if [ -f .circleci/settings.xml ]; then
-              cp .circleci/settings.xml ~/.m2/settings.xml
-            else
-              echo 'settings.xml not found, skipping copy.'
-            fi
+          name: Copy settings.xml
+          command: cp .circleci/settings.xml $HOME/.m2/settings.xml
 
 workflows:
   version: 2
-  build_and_test:
+  copy-settings:
     jobs:
-      - build
+      - settingskopieren
