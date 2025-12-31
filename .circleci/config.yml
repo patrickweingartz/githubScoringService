@@ -1,6 +1,16 @@
 version: 2.1
 
 jobs:
+
+  settingskopieren:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - run:
+          name: Copy settings.xml
+          command: cp .circleci/settings.xml $HOME/.m2/settings.xml
+
   build-service:
     docker:
       - image: cimg/openjdk:17.0
@@ -37,11 +47,13 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
+      - settingskopieren
       - test:
+          requires:
+            - settingskopieren
           filters:
             branches:
               only: main
-
       - deploy:
           requires:
             - test
