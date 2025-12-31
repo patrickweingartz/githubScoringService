@@ -10,7 +10,12 @@ jobs:
           name: Configure Maven
           command: |
             mkdir -p ~/.m2
-            cp .circleci/settings.xml ~/.m2/settings2.xml
+            # Ensure the settings.xml file exists before copying
+            if [ -f .circleci/settings.xml ]; then
+              cp .circleci/settings.xml ~/.m2/settings.xml
+            else
+              echo 'settings.xml not found, skipping copy.'
+            fi
 
 workflows:
   version: 2
