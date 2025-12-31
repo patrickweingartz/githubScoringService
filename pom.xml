@@ -100,4 +100,5 @@
       <url>https://maven.pkg.github.com/patrickweingartz/githubScoringServiceApi</url>
     </repository>
   </repositories>
+         
 </project>
