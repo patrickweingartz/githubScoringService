@@ -9,19 +9,10 @@ jobs:
       - checkout
       - run:
           name: Copy settings.xml
-          command: cp .circleci/settings.xml $HOME/.m2/settings.xml
-
-  build-service:
-    docker:
-      - image: cimg/openjdk:17.0
-    steps:
-      - checkout
-
-      - run:
-          name: Configure Maven
           command: |
             mkdir -p $HOME/.m2
             cp .circleci/settings.xml $HOME/.m2/settings.xml
+
   test:
     docker:
       - image: cimg/openjdk:17.0
