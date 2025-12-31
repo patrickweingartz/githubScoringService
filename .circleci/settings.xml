@@ -1,0 +1,9 @@
+<settings>
+  <servers>
+    <server>
+      <id>github</id> <!-- muss exakt mit pom.xml übereinstimmen -->
+      <username>${env.MAVEN_USERNAME}</username>
+      <password>${env.MAVEN_PASSWORD}</password>
+    </server>
+  </servers>
+</settings>
