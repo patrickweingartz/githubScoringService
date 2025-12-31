@@ -1,6 +1,18 @@
 version: 2.1
 
 jobs:
+  build-service:
+    docker:
+      - image: cimg/openjdk:17.0
+    steps:
+      - checkout
+
+      - run:
+          name: Configure Maven
+          command: |
+            mkdir -p ~/.m2
+            cp .circleci/settings.xml ~/.m2/settings2.xml
+
   test:
     docker:
       - image: cimg/openjdk:17.0
