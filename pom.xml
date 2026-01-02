@@ -51,9 +51,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.example</groupId>
-      <artifactId>GithubScoringServiceApi</artifactId>
-      <version>1.0.5</version>
+      <groupId>io.github.patrickweingartz</groupId>
+      <artifactId>github-scoring-service-api</artifactId>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
