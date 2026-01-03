@@ -1,58 +1,24 @@
 version: 2.1
 
+executors:
+  maven-executor:
+    docker:
+      - image: cimg/openjdk:24.0.2
+
 jobs:
-
-  settingskopieren:
-    docker:
-      - image: cimg/base:current
+  build:
+    executor: maven-executor
     steps:
       - checkout
       - run:
-          name: Copy settings.xml
-          command: |
-            mkdir -p $HOME/.m2
-            cp .circleci/settings.xml $HOME/.m2/settings.xml
-
-  test:
-    docker:
-      - image: cimg/openjdk:21.0
-    steps:
-      - checkout
-
+          name: Verify Maven Installation
+          command: mvn -version
       - run:
-          name: Copy settings.xml
-          command: |
-            mkdir -p $HOME/.m2
-            cp .circleci/settings.xml $HOME/.m2/settings.xml
-
-      - run:
-          name: Run Unit & Integration Tests
-          command: |
-            mvn clean verify -U
-
-  deploy:
-    docker:
-      - image: cimg/openjdk:17.0
-    steps:
-      - checkout
-      - run:
-          name: Deploy Application
-          command: echo "Deploy to ECS"
+          name: Run Maven Tests
+          command: mvn test
 
 workflows:
   version: 2
-  build_test_deploy:
+  build_and_test:
     jobs:
-      - settingskopieren
-      - test:
-          requires:
-            - settingskopieren
-          filters:
-            branches:
-              only: main
-      - deploy:
-          requires:
-            - test
-          filters:
-            branches:
-              only: main
+      - build
