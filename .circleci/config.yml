@@ -13,6 +13,9 @@ jobs:
       - run:
           name: Verify Maven Installation
           command: mvn -version
+      - run:
+          name: Run Maven Tests
+          command: mvn test
 
 workflows:
   version: 2
