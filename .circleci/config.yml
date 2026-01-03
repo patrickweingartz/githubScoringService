@@ -1,38 +1,21 @@
 version: 2.1
 
-jobs:
-  build_and_push:
+executors:
+  maven-executor:
     docker:
-      - image: cimg/openjdk:17.0.10
+      - image: cimg/openjdk:24.0.2
+
+jobs:
+  build:
+    executor: maven-executor
     steps:
       - checkout
       - run:
-          name: Install Maven
-          command: sudo apt-get update && sudo apt-get install -y maven
-      - setup_remote_docker
-      - run:
-          name: Clean and Reinstall ca-certificates-java
-          command: |
-            sudo apt-get clean
-            sudo apt-get install --reinstall -y ca-certificates-java
-      - run:
-          name: Run Maven Tests
-          command: mvn test
-      - run:
-          name: Build Docker Image
-          command: |
-            docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/githubscoringserviceapi:latest .
-      - run:
-          name: Login to AWS ECR
-          command: |
-            echo $AWS_SECRET_ACCESS_KEY | docker login -u AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-      - run:
-          name: Push Docker Image
-          command: |
-            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/githubscoringserviceapi:latest
+          name: Verify Maven Installation
+          command: mvn -version
 
 workflows:
   version: 2
-  build_and_deploy:
+  build_and_test:
     jobs:
-      - build_and_push
+      - build
