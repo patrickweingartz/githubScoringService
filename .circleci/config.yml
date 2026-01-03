@@ -15,14 +15,20 @@ jobs:
 
   test:
     docker:
-      - image: cimg/openjdk:17.0
+      - image: cimg/openjdk:21.0
     steps:
       - checkout
 
       - run:
+          name: Copy settings.xml
+          command: |
+            mkdir -p $HOME/.m2
+            cp .circleci/settings.xml $HOME/.m2/settings.xml
+
+      - run:
           name: Run Unit & Integration Tests
           command: |
-            mvn clean verify
+            mvn clean verify -U
 
   deploy:
     docker:
