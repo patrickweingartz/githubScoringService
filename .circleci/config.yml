@@ -9,6 +9,9 @@ jobs:
       - setup_remote_docker:
           version: 20.10.7
       - run:
+          name: Run Maven Tests
+          command: mvn test
+      - run:
           name: Build Docker Image
           command: |
             docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/githubscoringserviceapi:latest .
