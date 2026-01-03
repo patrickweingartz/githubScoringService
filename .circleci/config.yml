@@ -3,9 +3,12 @@ version: 2.1
 jobs:
   build_and_push:
     docker:
-      - image: cimg/base:2022.05
+      - image: cimg/openjdk:17.0.10
     steps:
       - checkout
+      - run:
+          name: Install Maven
+          command: sudo apt-get update && sudo apt-get install -y maven
       - setup_remote_docker
       - run:
           name: Run Maven Tests
