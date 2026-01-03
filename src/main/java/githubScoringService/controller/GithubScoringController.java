@@ -33,12 +33,20 @@ public class GithubScoringController implements GetGithubReposSortedByPopularity
                                                                                       @PathVariable(value = "minCreationDateOfRepository", required = false)
                                                                                       String minCreationDateOfRepositoryPath) {
 
-    if (repositoryLanguagePath == null && minCreationDateOfRepositoryPath == null) {
+    if ("null".equals(repositoryLanguagePath) && "null".equals(minCreationDateOfRepositoryPath)) {
       throw new NoParamsForSearchException("The Github-API needs at least one Searchparameter to perform a repository search!");
     }
     List<GithubRepository> gitHubRespositoryList;
+    LocalDate minCreationDate = null;
+    String repositoryLanguage = null;
     try {
-      gitHubRespositoryList = githubScoringService.getRepositoriesSortedByPopularity(authorizationToken, repositoryLanguagePath, LocalDate.parse(minCreationDateOfRepositoryPath));
+      if (!"null".equals(minCreationDateOfRepositoryPath)){
+        minCreationDate = LocalDate.parse(minCreationDateOfRepositoryPath);
+      }
+      if (!"null".equals(repositoryLanguagePath)){
+        repositoryLanguage = repositoryLanguagePath;
+      }
+      gitHubRespositoryList = githubScoringService.getRepositoriesSortedByPopularity(authorizationToken, repositoryLanguage, minCreationDate);
       return ResponseEntity.status(HttpStatus.OK).body(gitHubRespositoryList);
     }
     catch (IOException e) {
