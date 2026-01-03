@@ -11,6 +11,11 @@ jobs:
           command: sudo apt-get update && sudo apt-get install -y maven
       - setup_remote_docker
       - run:
+          name: Clean and Reinstall ca-certificates-java
+          command: |
+            sudo apt-get clean
+            sudo apt-get install --reinstall -y ca-certificates-java
+      - run:
           name: Run Maven Tests
           command: mvn test
       - run:
