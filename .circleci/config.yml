@@ -1,52 +1,28 @@
 version: 2.1
 
 jobs:
-
-  settingskopieren:
+  build_and_push:
     docker:
-      - image: cimg/base:current
+      - image: cimg/base:2022.05
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 20.10.7
       - run:
-          name: Copy settings.xml
+          name: Build Docker Image
           command: |
-            mkdir -p $HOME/.m2
-            cp .circleci/settings.xml $HOME/.m2/settings.xml
-
-  test:
-    docker:
-      - image: cimg/openjdk:17.0
-    steps:
-      - checkout
-
+            docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/githubscoringserviceapi:latest .
       - run:
-          name: Run Unit & Integration Tests
+          name: Login to AWS ECR
           command: |
-            mvn clean verify -U
-
-  deploy:
-    docker:
-      - image: cimg/openjdk:17.0
-    steps:
-      - checkout
+            echo $AWS_SECRET_ACCESS_KEY | docker login -u AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
       - run:
-          name: Deploy Application
-          command: echo "Deploy to ECS"
+          name: Push Docker Image
+          command: |
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/githubscoringserviceapi:latest
 
 workflows:
   version: 2
-  build_test_deploy:
+  build_and_deploy:
     jobs:
-      - settingskopieren
-      - test:
-          requires:
-            - settingskopieren
-          filters:
-            branches:
-              only: main
-      - deploy:
-          requires:
-            - test
-          filters:
-            branches:
-              only: main
+      - build_and_push
