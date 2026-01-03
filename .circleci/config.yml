@@ -34,6 +34,21 @@ jobs:
       - run:
           name: Run Maven Tests
           command: mvn test -U
+      - setup_remote_docker:
+          version: 20.10.7
+      - run:
+          name: Build Docker Image
+          command: docker build -t githubscoringserviceapi .
+      - run:
+          name: Login to AWS ECR
+          command: |
+            aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 962349671273.dkr.ecr.eu-central-1.amazonaws.com
+      - run:
+          name: Tag Docker Image
+          command: docker tag githubscoringserviceapi:latest 962349671273.dkr.ecr.eu-central-1.amazonaws.com/githubscoringserviceapi:latest
+      - run:
+          name: Push Docker Image to ECR
+          command: docker push 962349671273.dkr.ecr.eu-central-1.amazonaws.com/githubscoringserviceapi:latest
 
 workflows:
   version: 2
