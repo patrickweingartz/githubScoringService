@@ -35,8 +35,40 @@ jobs:
           name: Run Maven Tests
           command: mvn test -U
 
+  docker-build-push:
+    executor: maven-executor
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Install AWS CLI
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+      - run:
+          name: Build Docker Image
+          command: |
+            docker build -t githubscoringserviceapi .
+      - run:
+          name: Login to AWS ECR
+          command: |
+            aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 962349671273.dkr.ecr.eu-central-1.amazonaws.com
+      - run:
+          name: Tag and Push to ECR
+          command: |
+            docker tag githubscoringserviceapi:latest 962349671273.dkr.ecr.eu-central-1.amazonaws.com/githubscoringserviceapi:latest
+            docker push 962349671273.dkr.ecr.eu-central-1.amazonaws.com/githubscoringserviceapi:latest
+
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build
+      - docker-build-push:
+          requires:
+            - build
+          filters:
+            branches:
+              only: main
