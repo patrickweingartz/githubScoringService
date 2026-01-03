@@ -1,6 +1,18 @@
 version: 2.1
 
 jobs:
+
+  settingskopieren:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - run:
+          name: Copy settings.xml
+          command: |
+            mkdir -p $HOME/.m2
+            cp .circleci/settings.xml $HOME/.m2/settings.xml
+
   test:
     docker:
       - image: cimg/openjdk:17.0
@@ -10,7 +22,7 @@ jobs:
       - run:
           name: Run Unit & Integration Tests
           command: |
-            mvn clean verify
+            mvn clean verify -U
 
   deploy:
     docker:
@@ -25,11 +37,13 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
+      - settingskopieren
       - test:
+          requires:
+            - settingskopieren
           filters:
             branches:
               only: main
-
       - deploy:
           requires:
             - test
