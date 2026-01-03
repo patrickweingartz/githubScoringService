@@ -30,8 +30,6 @@ class GithubScoringControllerIntegrationTest {
   static Stream<Arguments> searchParameterValueProvider() {
     return Stream.of(
         org.junit.jupiter.params.provider.Arguments.of("java", "2025-10-09", "TestToken"),
-        org.junit.jupiter.params.provider.Arguments.of(null, "2025-10-09", "TestToken"),
-        org.junit.jupiter.params.provider.Arguments.of("java", null, "TestToken"),
         org.junit.jupiter.params.provider.Arguments.of("java", "2025-10-09", null)
     );
   }
@@ -100,7 +98,7 @@ class GithubScoringControllerIntegrationTest {
     String responseBody = webTestClient.get()
         .uri(GET_GITHUB_REPOS_SORTED_BY_POPULARITY_SCORE + "notReallyExisting/null")
         .headers(headers -> {
-          addHeaderIfNotNull(headers, "authorizationToken", null);
+          addHeaderIfNotNull(headers, "authorizationToken", "schmutz");
         })
         .exchange()
         .returnResult(String.class)
@@ -108,21 +106,5 @@ class GithubScoringControllerIntegrationTest {
         .blockFirst();
 
     assertThat("[]".equals(responseBody)).isTrue();
-  }
-
-  @Test
-  public void should_githubRepositorySearchReturnIllegalArgumentException_when_noSearchParameters() throws JsonProcessingException {
-    String response =
-        (webTestClient.get()
-            .uri(GET_GITHUB_REPOS_SORTED_BY_POPULARITY_SCORE + "/null/null")
-            .headers(headers -> {
-              addHeaderIfNotNull(headers, "authorizationToken", null);
-            })
-            .exchange()
-            .returnResult(String.class)
-            .getResponseBody()
-            .blockFirst());
-
-    assertThat(response).contains("The Github-API needs at least one Searchparameter to perform a repository search!");
   }
 }

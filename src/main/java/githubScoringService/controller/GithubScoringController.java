@@ -1,13 +1,11 @@
 package githubScoringService.controller;
 
-import githubScoringService.api.GithubScoringServiceApi;
+import githubScoringService.api.GetGithubReposSortedByPopularityScoreApi;
 import githubScoringService.exception.NoParamsForSearchException;
-import githubScoringService.model.ErrorResponse;
 import githubScoringService.model.GithubRepository;
 import githubScoringService.service.GithubScoringService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -19,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-public class GithubScoringController implements GithubScoringServiceApi {
+public class GithubScoringController implements GetGithubReposSortedByPopularityScoreApi {
 
   private final GithubScoringService githubScoringService;
 
@@ -27,7 +25,6 @@ public class GithubScoringController implements GithubScoringServiceApi {
     this.githubScoringService = githubScoringService;
   }
 
-  @Override
   @GetMapping("/getGithubReposSortedByPopularityScore/{repositoryLanguage}/{minCreationDateOfRepository}")
   public ResponseEntity<List<GithubRepository>> getGithubReposSortedByPopularityScore(@RequestHeader(value = "authorizationToken", required = false)
                                                                                       String authorizationToken,
@@ -36,30 +33,26 @@ public class GithubScoringController implements GithubScoringServiceApi {
                                                                                       @PathVariable(value = "minCreationDateOfRepository", required = false)
                                                                                       String minCreationDateOfRepositoryPath) {
 
-    String repositoryLanguage = "null".equals(repositoryLanguagePath) ? null : repositoryLanguagePath;
-    LocalDate minCreationDateOfRepository = "null".equals(minCreationDateOfRepositoryPath) ? null : LocalDate.parse(minCreationDateOfRepositoryPath);
-
-    if (repositoryLanguage == null && minCreationDateOfRepository == null) {
+    if ("null".equals(repositoryLanguagePath) && "null".equals(minCreationDateOfRepositoryPath)) {
       throw new NoParamsForSearchException("The Github-API needs at least one Searchparameter to perform a repository search!");
     }
     List<GithubRepository> gitHubRespositoryList;
+    LocalDate minCreationDate = null;
+    String repositoryLanguage = null;
     try {
-      gitHubRespositoryList = githubScoringService.getRepositoriesSortedByPopularity(authorizationToken, repositoryLanguage, minCreationDateOfRepository);
+      if (!"null".equals(minCreationDateOfRepositoryPath)){
+        minCreationDate = LocalDate.parse(minCreationDateOfRepositoryPath);
+      }
+      if (!"null".equals(repositoryLanguagePath)){
+        repositoryLanguage = repositoryLanguagePath;
+      }
+      gitHubRespositoryList = githubScoringService.getRepositoriesSortedByPopularity(authorizationToken, repositoryLanguage, minCreationDate);
       return ResponseEntity.status(HttpStatus.OK).body(gitHubRespositoryList);
     }
     catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Collections.emptyList());
     }
-  }
-
-  @ExceptionHandler(NoParamsForSearchException.class)
-  public ResponseEntity<ErrorResponse> handleNoParamsException(NoParamsForSearchException noParamException) {
-    ErrorResponse errorResponse = new ErrorResponse();
-    errorResponse.setError("Parameter Error");
-    errorResponse.setMessage(noParamException.getMessage());
-
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
   }
 }
 
